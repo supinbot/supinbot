@@ -20,5 +20,5 @@ SupinBot.CommandManager.addCommand('time', function(bot, user, channel, args, ar
 
 SupinBot.CommandManager.addCommand('google', function(bot, user, channel, args, argsStr) {
 	var url = 'http://lmgtfy.com/?' + querystring.stringify({q: argsStr});
-	bot.postMessage(channel.id, url + ':expressionless:', PARAMS);
+	bot.postMessage(channel.id, url + ' :expressionless:', PARAMS);
 });
