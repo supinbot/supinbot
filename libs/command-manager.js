@@ -27,6 +27,7 @@ CommandManager.prototype.parseMessage = function(message) {
 	}
 };
 
+
 function Command (commandName, func) {
 	this.name = commandName;
 	this.func = func;
@@ -35,6 +36,11 @@ function Command (commandName, func) {
 	this.channels = [];
 	this.arguments = [];
 }
+
+Command.prototype.setDescription = function(description) {
+	this.description = description;
+	return this;
+};
 
 Command.prototype.adminOnly = function() {
 	this.admin = true;
@@ -51,8 +57,8 @@ Command.prototype.channelRestriction = function(channels) {
 	return this;
 };
 
-Command.prototype.addArgument = function(argument) {
-	this.arguments.push(argument);
+Command.prototype.addArgument = function(name, type, def) {
+	this.arguments.push({name: name, type: type, default: def});
 	return this;
 };
 
@@ -128,13 +134,13 @@ Command.prototype.verifyArgs = function(args) {
 
 		if (argVal) {
 			if (argPolicy.type === 'int' || argPolicy.type === 'float') {
-				if (isNaN(Number(argVal))) throw new Error('Argument #' + (i + 1) + ' needs to be a number :tired_face:');
-				if (argPolicy.type === 'int' && argVal % 1 !== 0) throw new Error('Argument #' + (i + 1) + ' needs to be an integer :confounded:');
+				if (isNaN(Number(argVal))) throw new Error('Argument #' + (i + 1) + '(' + argPolicy.name + ')' + ' needs to be a number :tired_face:');
+				if (argPolicy.type === 'int' && argVal % 1 !== 0) throw new Error('Argument #' + (i + 1) + '(' + argPolicy.name + ')' + ' needs to be an integer :confounded:');
 
 				args[i] = Number(argVal);
 			}
 		} else {
-			throw new Error('You did not give me argument #' + (i + 1) + ', I need it to run this command :anguished:');
+			throw new Error('You did not give me argument #' + (i + 1) + '(' + argPolicy.name + ')' + ', I need it to run this command :anguished:');
 		}
 	}
 

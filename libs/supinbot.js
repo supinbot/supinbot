@@ -10,6 +10,40 @@ function Supinbot(config, params) {
 
 	this.bot.PARAMS = params || {icon_emoji: ':robot_face:'};
 
+	// We add a default help command that lists all commands available to the user running it.
+	this.CommandManager.addCommand('help', function(bot, user, channel, args, argsStr) {
+		var res = '_Command prefix: *' + self.CommandManager.CMDCHAR + '*_\n';
+
+		for (var commandName in self.CommandManager.getCommands()) {
+			var command = self.CommandManager.getCommands()[commandName];
+			if (command.canExec(user, channel)) return;
+
+			res = res + '*' + command.getName() + '* ';
+
+			for (var argID in command.arguments) {
+				var argument = command.arguments[argID];
+				var argText = argument.type + ':' + argument.name;
+
+				if (typeof argument.default !== 'undefined') {
+					res = res + '[' + argText + ' = ' + argument.default + '] ';
+				} else {
+					res = res + '<' + argText + '> ';
+				}
+			}
+
+			if (command.description) {
+				res = res + ' _' + command.description + '_';
+			}
+
+			res = res + '\n';
+		}
+
+		res = res.slice(0, -1); // Removes the trailing newline character.
+
+		bot.postMessage(user.id, res, bot.PARAMS);
+	})
+	.setDescription('You are looking at it...');
+
 	this.bot.on('message', function (data) {
 		if (data.type == 'message') {
 			if (data.subtype != 'bot_message' && data.text) {
