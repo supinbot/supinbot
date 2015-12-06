@@ -16,7 +16,7 @@ function Supinbot(config, params) {
 
 		for (var commandName in self.CommandManager.getCommands()) {
 			var command = self.CommandManager.getCommands()[commandName];
-			if (command.canExec(user, channel)) return;
+			if (command.canExec(user, channel)) continue;
 
 			res = res + '*' + command.getName() + '* ';
 
