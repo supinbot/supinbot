@@ -4,10 +4,10 @@ module.exports = function(SupinBot) {
 
 	// We add a default help command that lists all commands available to the user running it.
 	SupinBot.CommandManager.addCommand('help', function(user, channel, args, argsStr) {
-		var res = '_Command prefix: *' + self.CommandManager.CMDCHAR + '*_\n';
+		var res = '_Command prefix: *' + SupinBot.CommandManager.CMDCHAR + '*_\n';
 
-		for (var commandName in self.CommandManager.getCommands()) {
-			var command = self.CommandManager.getCommands()[commandName];
+		for (var commandName in SupinBot.CommandManager.getCommands()) {
+			var command = SupinBot.CommandManager.getCommands()[commandName];
 			if (command.canExec(user, channel)) continue;
 
 			res = res + '*' + command.getName() + '* ';
