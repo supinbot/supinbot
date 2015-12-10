@@ -156,10 +156,10 @@ Command.prototype.exec = function(bot, user, channel, message) {
 		try {
 			args = this.verifyArgs(args);
 		} catch (e) {
-			return bot.postMessage(user.id, e.message, bot.PARAMS);
+			return bot.postMessage(user.id, e.message);
 		}
-		this.func(bot, user, channel, args, argString);
+		this.func(user, channel, args, argString);
 	} else {
-		bot.postMessage(user.id, permErr, bot.PARAMS);
+		bot.postMessage(user.id, permErr);
 	}
 };
