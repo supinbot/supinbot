@@ -50,9 +50,10 @@ module.exports = function(SupinBot) {
 		callAPI('newstories.json', function(newStories) {
 			if (newStories) {
 				var lastSeenIndex = newStories.indexOf(lastSeen);
+				SupinBot.log.debug('lastSeenIndex', lastSeenIndex);
+
 				if (lastSeenIndex > 0) {
 					var newStories = newStories.slice(0, lastSeenIndex);
-					lastSeen = newStories[0];
 
 					async.each(newStories, function(storyID, next) {
 						callAPI('item/' + storyID + '.json', function(story) {
@@ -64,6 +65,8 @@ module.exports = function(SupinBot) {
 						});
 					});
 				}
+
+				lastSeen = newStories[0];
 			}
 		});
 	}, REFRESH_RATE);
