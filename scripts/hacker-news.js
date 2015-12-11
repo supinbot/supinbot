@@ -5,7 +5,7 @@ var URL = 'https://hacker-news.firebaseio.com/v0/';
 var REFRESH_RATE = 120000;
 var CHANNEL = '#news';
 
-var lastSeen = undefined;
+var lastSeen;
 
 module.exports = function(SupinBot) {
 	SupinBot.log.info('Loading Hacker News...');
@@ -18,13 +18,11 @@ module.exports = function(SupinBot) {
 			}
 
 			try {
-				var data = JSON.parse(body);
+				callback(JSON.parse(body));
 			} catch (e) {
 				SupinBot.log.warn('Failed to parse hacker-news data.');
 				callback();
 			}
-
-			callback(data);
 		});
 	}
 
@@ -53,7 +51,7 @@ module.exports = function(SupinBot) {
 				SupinBot.log.debug('lastSeenIndex', lastSeenIndex);
 
 				if (lastSeenIndex > 0) {
-					var newStories = newStories.slice(0, lastSeenIndex);
+					newStories = newStories.slice(0, lastSeenIndex);
 
 					async.each(newStories, function(storyID, next) {
 						callAPI('item/' + storyID + '.json', function(story) {
