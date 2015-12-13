@@ -11,7 +11,7 @@ var CommandManager = require(path.resolve('.', 'libs', 'command-manager'));
 
 
 try {
-	var BOT_CONFIG = JSON.parse(fs.readFileSync(path.resolve('.', 'bot-config.json')))
+	var BOT_CONFIG = JSON.parse(fs.readFileSync(path.resolve('.', 'bot-config.json')));
 } catch (e) {
 	winston.error('Failed to load bot-config.json, aborting!');
 	process.exit(1);
@@ -63,10 +63,10 @@ SupinBot.loadScripts = function() {
 
 	if (BOT_CONFIG.scripts) {
 		BOT_CONFIG.scripts.forEach(function(script) {
-			SupinBot.loadScript(path.resolve('.', 'node_modules', script));
-		})
+			SupinBot.loadScript(script);
+		});
 	}
-}
+};
 
 SupinBot.loadScript = function(filePath) {
 	try {
@@ -81,11 +81,12 @@ SupinBot.loadScript = function(filePath) {
 		SupinBot.log.error('An uncaught error occured while loading ' + filePath);
 		SupinBot.log.error(e);
 	}
-}
-SupinBot.loadScripts()
+};
+
+SupinBot.loadScripts();
 
 SupinBot.postMessage = function(channel, message, params) {
-	return SupinBot.bot.postMessage(channel, message, extend(SupinBot.PARAMS, params))
+	return SupinBot.bot.postMessage(channel, message, extend(SupinBot.PARAMS, params));
 };
 
 SupinBot.getChannelByID = function(channelID) {

@@ -58,4 +58,4 @@ module.exports = function(SupinBot) {
 	})
 	.setDescription('Generates a \'Let Me Google That For You\' link.')
 	.addArgument('Search Query', 'string');
-}
+};
