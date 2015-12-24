@@ -8,8 +8,6 @@ var CHANNEL = '#news';
 var lastSeen;
 
 module.exports = function(SupinBot) {
-	SupinBot.log.info('Loading Hacker News...');
-
 	function callAPI(api, callback) {
 		request(URL + api, function(err, res, body) {
 			if (err || res.statusCode != 200) {

@@ -24,7 +24,7 @@ SupinBot.events = new EventEmitter();
 SupinBot.log = new winston.Logger({
 	level: (BOT_CONFIG.log.debug) ? 'debug' : 'info',
 	transports: [
-		new winston.transports.Console,
+		new winston.transports.Console(),
 		new winston.transports.File({
 			filename: (BOT_CONFIG.log.filename) ? BOT_CONFIG.log.filename : 'supinbot.log',
 			handleExceptions: true
@@ -56,6 +56,32 @@ SupinBot.bot.on('message', function (data) {
 });
 
 
+SupinBot.postMessage = function(channel, message, params) {
+	return SupinBot.bot.postMessage(channel, message, extend(SupinBot.PARAMS, params));
+};
+
+SupinBot.getChannelByID = function(channelID) {
+	for (var channel in SupinBot.bot.channels) {
+		if (SupinBot.bot.channels[channel].id == channelID) {
+			return SupinBot.bot.channels[channel];
+		}
+	}
+
+	for (var group in SupinBot.bot.groups) {
+		if (SupinBot.bot.groups[group].id == channelID) {
+			return SupinBot.bot.groups[group];
+		}
+	}
+};
+
+SupinBot.getUserByID = function(userID) {
+	for (var user in SupinBot.bot.users) {
+		if (SupinBot.bot.users[user].id == userID) {
+			return SupinBot.bot.users[user];
+		}
+	}
+};
+
 SupinBot.loadScripts = function() {
 	fs.readdirSync(path.resolve('.', 'scripts')).sort().forEach(function(file) {
 		SupinBot.loadScript(path.resolve('.', 'scripts', file));
@@ -84,29 +110,3 @@ SupinBot.loadScript = function(filePath) {
 };
 
 SupinBot.loadScripts();
-
-SupinBot.postMessage = function(channel, message, params) {
-	return SupinBot.bot.postMessage(channel, message, extend(SupinBot.PARAMS, params));
-};
-
-SupinBot.getChannelByID = function(channelID) {
-	for (var channel in SupinBot.bot.channels) {
-		if (SupinBot.bot.channels[channel].id == channelID) {
-			return SupinBot.bot.channels[channel];
-		}
-	}
-
-	for (var group in SupinBot.bot.groups) {
-		if (SupinBot.bot.groups[group].id == channelID) {
-			return SupinBot.bot.groups[group];
-		}
-	}
-};
-
-SupinBot.getUserByID = function(userID) {
-	for (var user in SupinBot.bot.users) {
-		if (SupinBot.bot.users[user].id == userID) {
-			return SupinBot.bot.users[user];
-		}
-	}
-};
