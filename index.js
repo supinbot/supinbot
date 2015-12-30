@@ -8,37 +8,31 @@ var extend = require('extend');
 var rollbar = require('rollbar');
 var winston = require('winston');
 var SlackBot = require('slackbots');
-var CommandManager = require(path.resolve('.', 'libs', 'command-manager'));
+var CommandManager = require(path.resolve('libs/command-manager'));
+var config = require(path.resolve('libs/config'));
 
 
-try {
-	var BOT_CONFIG = JSON.parse(fs.readFileSync(path.resolve('.', 'bot-config.json')));
-} catch (e) {
-	winston.error('Failed to load bot-config.json, aborting!');
-	process.exit(1);
-}
-
-
-SupinBot.bot = new SlackBot(BOT_CONFIG.slackbot);
+SupinBot.config = config;
+SupinBot.bot = new SlackBot(config.get('slack'));
 SupinBot.CommandManager = new CommandManager();
 SupinBot.events = new EventEmitter();
 SupinBot.rollbar = rollbar;
 SupinBot.log = new winston.Logger({
-	level: (BOT_CONFIG.log.debug) ? 'debug' : 'info',
+	level: config.get('log.level'),
 	transports: [
 		new winston.transports.Console(),
 		new winston.transports.File({
-			filename: (BOT_CONFIG.log.filename) ? BOT_CONFIG.log.filename : 'supinbot.log',
+			filename: config.get('log.filename'),
 			handleExceptions: true
 		})
 	]
 });
 
-SupinBot.PARAMS = BOT_CONFIG.params || {icon_emoji: ':robot_face:'};
+SupinBot.PARAMS = config.get('slack.params');
 
-SupinBot.rollbar.handleUncaughtExceptions(BOT_CONFIG.rollbar.token, {
+SupinBot.rollbar.handleUncaughtExceptions(config.get('rollbar_token'), {
 	exitOnUncaughtException: true,
-	environment: BOT_CONFIG.rollbar.env
+	environment: config.get('env')
 });
 
 
@@ -90,15 +84,13 @@ SupinBot.getUserByID = function(userID) {
 };
 
 SupinBot.loadScripts = function() {
-	fs.readdirSync(path.resolve('.', 'scripts')).sort().forEach(function(file) {
-		SupinBot.loadScript(path.resolve('.', 'scripts', file));
+	fs.readdirSync(path.resolve('scripts')).sort().forEach(function(file) {
+		SupinBot.loadScript(path.resolve('scripts', file));
 	});
 
-	if (BOT_CONFIG.scripts) {
-		BOT_CONFIG.scripts.forEach(function(script) {
-			SupinBot.loadScript(script);
-		});
-	}
+	config.get('scripts').forEach(function(script) {
+		SupinBot.loadScript(script);
+	});
 };
 
 SupinBot.loadScript = function(filePath) {
