@@ -62,15 +62,25 @@ var config = convict({
 });
 
 config.loadConfig = function(configFile, schema) {
-	var dir = path.dirname(path.resolve(process.cwd(), config.get('config_file')));
-	this.loadFile(path.resolve(dir, configFile));
+	var dir = path.dirname(path.resolve(process.cwd(), this.get('config_file')));
+	var conf;
+
+	if (schema) {
+		conf = convict(schema);
+	} else {
+		conf = this;
+	}
+
+	conf.loadFile(path.resolve(dir, configFile));
 
 	try {
-		this.validate();
+		conf.validate();
 	} catch (e) {
 		console.error('An error occured while validating the ' + configFile + ' config file:\n' + e.message);
 		process.exit(1);
 	}
+
+	return conf;
 };
 
 config.loadConfig(path.basename(config.get('config_file')));
