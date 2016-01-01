@@ -33,11 +33,6 @@ var config = convict({
 			default: {icon_emoji: ':robot_face:'}
 		}
 	},
-	rollbar_token: {
-		doc: 'Rollbar post_server_item token',
-		format: String,
-		default: null
-	},
 	log: {
 		level: {
 			doc: 'The winston logging level',

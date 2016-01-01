@@ -5,7 +5,6 @@ var path = require('path');
 var fs = require('fs');
 
 var extend = require('extend');
-var rollbar = require('rollbar');
 var winston = require('winston');
 var SlackBot = require('slackbots');
 var CommandManager = require(path.resolve('libs/command-manager'));
@@ -16,7 +15,6 @@ SupinBot.config = config;
 SupinBot.bot = new SlackBot(config.get('slack'));
 SupinBot.CommandManager = new CommandManager();
 SupinBot.events = new EventEmitter();
-SupinBot.rollbar = rollbar;
 SupinBot.log = new winston.Logger({
 	level: config.get('log.level'),
 	transports: [
@@ -29,11 +27,6 @@ SupinBot.log = new winston.Logger({
 });
 
 SupinBot.PARAMS = config.get('slack.params');
-
-SupinBot.rollbar.handleUncaughtExceptions(config.get('rollbar_token'), {
-	exitOnUncaughtException: true,
-	environment: config.get('env')
-});
 
 
 SupinBot.bot.on('message', function (data) {
