@@ -13,6 +13,7 @@ module.exports = function(SupinBot) {
 			if (err || res.statusCode != 200) {
 				SupinBot.log.warn('Failed to get hacker-news data.', {error: err, status: res.statusCode});
 				callback();
+				return;
 			}
 
 			try {
