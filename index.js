@@ -51,7 +51,7 @@ SupinBot.bot.on('message', function (data) {
 
 
 SupinBot.postMessage = function(channel, message, params) {
-	return SupinBot.bot.postMessage(channel, message, extend(SupinBot.PARAMS, params));
+	return SupinBot.bot.postMessage(channel, message, extend({}, SupinBot.PARAMS, params));
 };
 
 SupinBot.getChannelByID = function(channelID) {
