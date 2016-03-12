@@ -1,10 +1,35 @@
 module.exports = CommandManager;
 
-function CommandManager(cmdChar) {
+/**
+ * Object that stores all Command objects.
+ * @param {String} [commandChar=!] The character to use to identify commands in chat.
+ * @constructor
+ */
+function CommandManager(commandChar) {
+	if (commandChar && commandChar.length > 1) {
+		throw new Error('commandChar cannot be more than a character long!');
+	}
+
 	this.commands = {};
-	this.CMDCHAR = cmdChar || '!';
+	this.COMMAND_CHAR = commandChar || '!';
 }
 
+/**
+ * Called when a command is executed.
+ *
+ * @callback commandCallback
+ * @param {Object} user The user who entered the command.
+ * @param {Object} channel The channel in which the command was entered.
+ * @param {Array} args Command parameters parsed as an array.
+ * @param {String} argsStr Raw command parameters.
+ */
+
+/**
+ * Creates a new command.
+ * @param {String} commandName The name of the command.
+ * @param {commandCallback} func Function called when the command is executed.
+ * @returns {Command}
+ */
 CommandManager.prototype.addCommand = function(commandName, func) {
 	var command = new Command(commandName, func);
 	this.commands[commandName] = command;
@@ -12,12 +37,21 @@ CommandManager.prototype.addCommand = function(commandName, func) {
 	return command;
 };
 
+/**
+ * Returns an object containing all commands.
+ * @returns {Object}
+ */
 CommandManager.prototype.getCommands = function() {
 	return this.commands;
 };
 
+/**
+ * Returns the first command found in the message.
+ * @param {String} message Message entered by a user.
+ * @returns {Command}
+ */
 CommandManager.prototype.parseMessage = function(message) {
-	if (message.slice(0, 1) === this.CMDCHAR) {
+	if (message.slice(0, 1) === this.COMMAND_CHAR) {
 		for (var commandName in this.getCommands()) {
 			var command = this.getCommands()[commandName];
 			if (command.isCommand(message)) {
@@ -28,6 +62,12 @@ CommandManager.prototype.parseMessage = function(message) {
 };
 
 
+/**
+ * Command that can be executed by a user.
+ * @param {String} commandName The name of the command.
+ * @param {commandCallback} func Function called when the command is executed.
+ * @constructor
+ */
 function Command (commandName, func) {
 	this.name = commandName;
 	this.func = func;
@@ -37,35 +77,69 @@ function Command (commandName, func) {
 	this.arguments = [];
 }
 
+/**
+ * Sets the description of the command (used in the help command).
+ * @param {String} description Description of the command.
+ * @returns {Command}
+ */
 Command.prototype.setDescription = function(description) {
 	this.description = description;
 	return this;
 };
 
+/**
+ * Prevents the command from being executed by non admins.
+ * @returns {Command}
+ */
 Command.prototype.adminOnly = function() {
 	this.admin = true;
 	return this;
 };
 
+/**
+ * Prevents the command from being executed by non owners.
+ * @returns {Command}
+ */
 Command.prototype.ownerOnly = function() {
 	this.owner = true;
 	return this;
 };
 
+/**
+ * Prevents the command from being executed in certain channels.
+ * @param {Array} channels Authorized channels.
+ * @returns {Command}
+ */
 Command.prototype.channelRestriction = function(channels) {
 	this.channels = channels;
 	return this;
 };
 
+/**
+ * Define an argument for the command.
+ * @param {String} channels Authorized channels.
+ * @param {String} type The type the argument is expecting (int, float, str).
+ * @param {(String|Number)} [def] Default value, makes the argument optional.
+ * @returns {Command}
+ */
 Command.prototype.addArgument = function(name, type, def) {
 	this.arguments.push({name: name, type: type, default: def});
 	return this;
 };
 
+/**
+ * Returns the command name.
+ * @returns {String}
+ */
 Command.prototype.getName = function() {
 	return this.name;
 };
 
+/**
+ * Returns wether or not a message is corresponding to this command.
+ * @param {String} message Message entered by a user.
+ * @returns {Bool}
+ */
 Command.prototype.isCommand = function(message) {
 	var commandLength = this.getName().length;
 	if (message.slice(1, commandLength + 1) == this.getName()) {
@@ -78,6 +152,12 @@ Command.prototype.isCommand = function(message) {
 	return false;
 };
 
+/**
+ * Returns an error if the user is not allowed to execute the command.
+ * @param {Object} user User object.
+ * @param {Object} channel Channel object.
+ * @returns {(String|null)}
+ */
 Command.prototype.canExec = function(user, channel) {
 	if (this.admin && !user.is_admin) {
 		return 'This command requires admin privileges.';
@@ -88,6 +168,11 @@ Command.prototype.canExec = function(user, channel) {
 	}
 };
 
+/**
+ * Parse a message into an array of strings.
+ * @param {String} message Message entered by a user.
+ * @returns {Array}
+ */
 Command.prototype.parseArgs = function(message) {
 	var skip = -1;
 	var args = [];
@@ -126,6 +211,11 @@ Command.prototype.parseArgs = function(message) {
 	return args;
 };
 
+/**
+ * Converts the command arguments to their desired types and handles input errors.
+ * @param {Array} args Parsed arguments.
+ * @returns {Array}
+ */
 Command.prototype.verifyArgs = function(args) {
 	for (var i = 0; i < this.arguments.length; i++) {
 		var argPolicy = this.arguments[i];
@@ -147,6 +237,13 @@ Command.prototype.verifyArgs = function(args) {
 	return args;
 };
 
+/**
+ * Executes a command as a user in a channel.
+ * @param {SupinBot} bot SupinBot object.
+ * @param {Object} user User object.
+ * @param {Object} channel Channel object.
+ * @param {String} message Message entered by the user.
+ */
 Command.prototype.exec = function(bot, user, channel, message) {
 	var permErr = this.canExec(user, channel);
 	if (!permErr) {
