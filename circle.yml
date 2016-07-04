@@ -1,0 +1,5 @@
+deployment:
+  production:
+    branch: deployment
+    commands:
+      - ssh "$DEPLOY_SSH_USER"@"$DEPLOY_SSH_HOST" "touch /home/supinbot/test_deploy"
