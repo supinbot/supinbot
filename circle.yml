@@ -1,5 +1,5 @@
 # Sample deploy command:
-# if cd "$DEPLOY_DIR"; then git pull; else git clone "$CIRCLE_REPOSITORY_URL" "$DEPLOY_DIR" && cd "$DEPLOY_DIR"; npm install --production && pm2 startOrRestart ecosystem.json production
+# (git -C "$DEPLOY_DIR" pull || git clone "$CIRCLE_REPOSITORY_URL" "$DEPLOY_DIR") && cd "$DEPLOY_DIR" && npm install --production && pm2 startOrRestart ecosystem.json production
 
 deployment:
   production:
