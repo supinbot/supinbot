@@ -1,6 +1,11 @@
 # Sample deploy command:
 # (git -C "$DEPLOY_DIR" pull || git clone "$CIRCLE_REPOSITORY_URL" "$DEPLOY_DIR") && cd "$DEPLOY_DIR" && npm install --production && pm2 startOrRestart ecosystem.json production
 
+general:
+  branches:
+    only:
+      - master
+
 deployment:
   production:
     branch: master
