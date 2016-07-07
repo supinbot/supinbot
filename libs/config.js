@@ -1,36 +1,30 @@
 var convict = require('convict');
-var path = require('path');
 
 var config = convict({
 	env: {
 		doc: 'The application enenvironment',
 		format: ['production', 'development'],
 		default: 'development',
-		env: 'NODE_ENV',
-		arg: 'node-env'
-	},
-	config_file: {
-		doc: 'The path to the main configuration file',
-		format: String,
-		default: 'config/bot-config.json',
-		env: 'CONFIG_FILE',
-		arg: 'config-file'
+		env: 'NODE_ENV'
 	},
 	slack: {
 		token: {
 			doc: 'Slack BOT Integration Token',
 			format: String,
-			default: null
+			default: null,
+			env: 'SUPINBOT_SLACK_TOKEN'
 		},
 		name: {
 			doc: 'Name of the BOT',
 			format: String,
-			default: 'SUPINBOT'
+			default: 'SUPINBOT',
+                        env: 'SUPINBOT_SLACK_NAME'
 		},
 		params: {
 			doc: 'Default parameters to send along with messages',
 			format: Object,
-			default: {icon_emoji: ':robot_face:'}
+			default: '{"icon_emoji": ":robot_face:"}',
+                        env: 'SUPINBOT_SLACK_PARAMS'
 		}
 	},
 	log: {
@@ -38,26 +32,24 @@ var config = convict({
 			doc: 'The winston logging level',
 			format: ['silly', 'debug', 'verbose', 'info', 'warn', 'error'],
 			default: 'info',
-			env: 'LOG_LEVEL',
-			arg: 'log-level'
-		},
-		filename: {
-			doc: 'The name of the winston log file',
-			format: String,
-			default: 'supinbot.log',
-			env: 'LOG_FILE',
-			arg: 'log-file'
+			env: 'SUPINBOT_LOG_LEVEL'
 		}
 	},
-	scripts: {
-		doc: 'Custom scripts to be loaded from node_modules',
-		format: Array,
-		default: []
+	redis: {
+		doc: 'The Redis connection URI',
+		format: String,
+		default: 'redis://redis:6379/1',
+		env: 'SUPINBOT_REDIS_URI'
+	},
+	plugins: {
+		doc: 'A JSON Array of enabled plugin names',
+		format: Object,
+		default: [],
+		env: 'SUPINBOT_PLUGINS'
 	}
 });
 
-config.loadConfig = function(configFile, schema) {
-	var dir = path.dirname(path.resolve(process.cwd(), this.get('config_file')));
+config.loadConfig = function(schema) {
 	var conf;
 
 	if (schema) {
@@ -66,18 +58,14 @@ config.loadConfig = function(configFile, schema) {
 		conf = this;
 	}
 
-	conf.loadFile(path.resolve(dir, configFile));
-
 	try {
 		conf.validate();
 	} catch (e) {
-		console.error('An error occured while validating the ' + configFile + ' config file:\n' + e.message);
+		console.error('An error occured while validating the configuration:\n' + e.message);
 		process.exit(1);
 	}
 
 	return conf;
 };
-
-config.loadConfig(path.basename(config.get('config_file')));
 
 module.exports = config;

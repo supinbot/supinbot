@@ -6,11 +6,14 @@ var EventEmitter = require('events').EventEmitter;
 var path = require('path');
 var fs = require('fs');
 
+require('dotenv').config({path: 'shared/.env'});
+
 var extend = require('extend');
 var winston = require('winston');
 var SlackClient = require('@slack/client');
-var CommandManager = require(path.resolve('libs/command-manager'));
-var config = require(path.resolve('libs/config'));
+var pkg = require('./package.json');
+var CommandManager = require('./libs/command-manager');
+var config = require('./libs/config');
 
 
 SupinBot.config = config;
@@ -24,7 +27,7 @@ SupinBot.log = new winston.Logger({
 			handleExceptions: true
 		}),
 		new winston.transports.File({
-			filename: config.get('log.filename'),
+			filename: './shared/supinbot.log',
 			json: false,
 			handleExceptions: true
 		})
@@ -90,23 +93,28 @@ SupinBot.postMessage = function(channel, message, params) {
 };
 
 /**
- * Loads all scripts in the scripts folder and all script modules.
+ * Loads all files in the commands folder.
  */
-SupinBot.loadScripts = function() {
-	fs.readdirSync(path.resolve('scripts')).sort().forEach(function(file) {
-		SupinBot.loadScript(path.resolve('scripts', file));
-	});
-
-	config.get('scripts').forEach(function(script) {
-		SupinBot.loadScript(script);
+SupinBot.loadCommands = function() {
+	fs.readdirSync('commands').sort().forEach(function(file) {
+		SupinBot.loadModule('./commands/' + file);
 	});
 };
 
 /**
- * Loads a single script.
- * @param {String} filePath The script to load.
+ * Loads all files in the commands folder.
  */
-SupinBot.loadScript = function(filePath) {
+SupinBot.loadPlugins = function() {
+	config.get('plugins').forEach(function(plugin) {
+		SupinBot.loadModule('./shared/plugins/node_modules/' + plugin);
+	});
+};
+
+/**
+ * Loads a module.
+ * @param {String} filePath The main script of the module. (index.js)
+ */
+SupinBot.loadModule = function(filePath) {
 	try {
 		var script = require(filePath);
 
@@ -124,6 +132,14 @@ SupinBot.loadScript = function(filePath) {
 
 
 /*----------  Start  ----------*/
-SupinBot.loadScripts();
+SupinBot.log.info('Loading SUPINBOT v' + pkg.version);
+SupinBot.log.info('Loading commands...');
+SupinBot.loadCommands();
+SupinBot.log.info('Commands loaded!');
+
+SupinBot.log.info('Loading plugins...');
+SupinBot.loadPlugins();
+SupinBot.log.info('Plugins loaded!');
+
 SupinBot.RtmClient.start();
 /*----------------- ----------*/
