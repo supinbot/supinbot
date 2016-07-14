@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(SupinBot) {
 
 	// We add a default help command that lists all commands available to the user running it.

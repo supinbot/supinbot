@@ -1,26 +1,28 @@
-module.exports = SupinBot = {};
+'use strict';
+
+var SupinBot = {};
+module.exports = SupinBot;
 
 
 /*----------  Init  ----------*/
-var EventEmitter = require('events').EventEmitter;
-var path = require('path');
-var fs = require('fs');
+const fs = require('fs');
 
 require('dotenv').config({path: 'shared/.env'});
 
-var extend = require('extend');
-var winston = require('winston');
-var SlackClient = require('@slack/client');
-var pkg = require('./package.json');
-var CommandManager = require('./libs/command-manager');
-var config = require('./libs/config');
+const extend = require('extend');
+const winston = require('winston');
+const SlackClient = require('@slack/client');
+const pkg = require('./package.json');
+const CommandManager = require('./lib/command-manager');
+const config = require('./lib/config');
+var WebApp = require('./app');
 
 
 SupinBot.config = config;
+SupinBot.WebApp = WebApp;
 SupinBot.CommandManager = new CommandManager();
-SupinBot.events = new EventEmitter();
 SupinBot.log = new winston.Logger({
-	level: config.get('log.level'),
+	level: config.get('log_level'),
 	transports: [
 		new winston.transports.Console({
 			json: false,
@@ -40,16 +42,14 @@ SupinBot.log = new winston.Logger({
 SupinBot.DataStore = new SlackClient.MemoryDataStore();
 SlackClient.MemoryDataStore.prototype.getChannelOrGroupById = function(objectId) {
 	var channel = this.getChannelById(objectId);
-	if (channel) {
-		return channel;
-	}
+	if (channel) return channel;
 
 	return this.getGroupById(objectId);
 };
 
 var clientConfig = {
 	dataStore: SupinBot.DataStore,
-	logLevel: config.get('log.level'),
+	logLevel: config.get('log_level'),
 	logger: function (logLevel, logString) {
 		SupinBot.log.log(logLevel, logString);
 	}
@@ -72,10 +72,6 @@ SupinBot.RtmClient.on(SupinBot.RTM_EVENTS.MESSAGE, function (data) {
 			command.exec(this, user, channel, data.text);
 		}
 	}
-
-	process.nextTick(function() {
-		SupinBot.events.emit('message', data);
-	});
 });
 /*-----------------------------------*/
 
@@ -142,4 +138,8 @@ SupinBot.loadPlugins();
 SupinBot.log.info('Plugins loaded!');
 
 SupinBot.RtmClient.start();
-/*----------------- ----------*/
+
+SupinBot.log.info('Starting the WebApp...');
+SupinBot.WebApp.startWebApp();
+SupinBot.log.info('WebApp started!');
+/*---------------------------*/

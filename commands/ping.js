@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(SupinBot) {
 
 	SupinBot.CommandManager.addCommand('add', function(user, channel, args, argsStr) {

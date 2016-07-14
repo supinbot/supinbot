@@ -1,3 +1,5 @@
+'use strict';
+
 var querystring = require('querystring');
 
 module.exports = function(SupinBot) {
