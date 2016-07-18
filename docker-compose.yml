@@ -2,14 +2,14 @@ version: '2'
 services:
   node:
     build: .
-#    depends_on:
-#      - redis
-#    links:
-#      - redis:redis
+    depends_on:
+      - redis
+    links:
+      - redis:redis
     volumes:
       - /var/supinbot:/supinbot/shared
     environment:
-      - SUPINBOT_REDIS_URI=redis://redis:6379/1
+      - SUPINBOT_REDIS_URI=redis://redis:6379
       - NODE_ENV=production
-#  redis:
-#    image: redis
+  redis:
+    image: redis
