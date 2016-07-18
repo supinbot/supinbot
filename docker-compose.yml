@@ -2,6 +2,10 @@ redis:
   image: redis
 node:
   image: starfox64/supinbot
+  ports:
+    - 8080:8080/tcp
+  labels:
+    io.rancher.container.pull_image: always
   links:
     - redis:redis
   volumes:
