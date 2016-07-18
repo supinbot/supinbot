@@ -58,6 +58,7 @@ var clientConfig = {
 SupinBot.RtmClient = new SlackClient.RtmClient(config.get('slack.token'), clientConfig);
 SupinBot.WebClient = new SlackClient.WebClient(config.get('slack.token'), clientConfig);
 SupinBot.RTM_EVENTS = SlackClient.RTM_EVENTS;
+SupinBot.CLIENT_EVENTS = SlackClient.CLIENT_EVENTS;
 SupinBot.RTM_MESSAGE_SUBTYPES = SlackClient.RTM_MESSAGE_SUBTYPES;
 SupinBot.PARAMS = extend({username: config.get('slack.name')}, config.get('slack.params'));
 
@@ -72,6 +73,10 @@ SupinBot.RtmClient.on(SupinBot.RTM_EVENTS.MESSAGE, function (data) {
 			command.exec(this, user, channel, data.text);
 		}
 	}
+});
+
+SupinBot.RtmClient.on(SupinBot.CLIENT_EVENTS.RTM.DISCONNECT, function() {
+	process.exit(1);
 });
 /*-----------------------------------*/
 
