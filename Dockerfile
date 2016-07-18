@@ -7,4 +7,4 @@ WORKDIR /supinbot
 RUN npm install --production
 CMD ./init-shared.sh && node index.js
 
-VOLUME shared
+VOLUME /supinbot/shared
