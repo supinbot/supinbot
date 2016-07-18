@@ -1,6 +1,6 @@
 {
   "name": "supinbot",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "private": true,
   "description": "A not so friendly bot for the SUPINFO Slack chat.",
   "main": "index.js",
