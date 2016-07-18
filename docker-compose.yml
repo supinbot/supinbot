@@ -1,7 +1,7 @@
 version: '2'
 services:
   node:
-    build: .
+    image: starfox64/supinbot
     depends_on:
       - redis
     links:
