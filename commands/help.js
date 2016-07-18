@@ -1,4 +1,4 @@
-var querystring = require('querystring');
+'use strict';
 
 module.exports = function(SupinBot) {
 
@@ -36,26 +36,4 @@ module.exports = function(SupinBot) {
 	})
 	.setDescription('You are looking at it...');
 
-
-	SupinBot.CommandManager.addCommand('add', function(user, channel, args, argsStr) {
-		SupinBot.postMessage(channel.id, args[0] + ' + ' + args[1] + ' = ' + String(args[0] + args[1]));
-	})
-	.setDescription('Adds two numbers.')
-	.channelRestriction(['global', 'dev'])
-	.addArgument('Number #1', 'int', 5)
-	.addArgument('Number #2', 'int', 2);
-
-
-	SupinBot.CommandManager.addCommand('time', function(user, channel, args, argsStr) {
-		SupinBot.postMessage(channel.id, String(new Date()));
-	})
-	.setDescription('Displays the current time.');
-
-
-	SupinBot.CommandManager.addCommand('google', function(user, channel, args, argsStr) {
-		var url = 'http://lmgtfy.com/?' + querystring.stringify({q: argsStr});
-		SupinBot.postMessage(channel.id, url + ' :expressionless:');
-	})
-	.setDescription('Generates a \'Let Me Google That For You\' link.')
-	.addArgument('Search Query', 'string');
 };
