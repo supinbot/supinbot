@@ -15,11 +15,9 @@ const SlackClient = require('@slack/client');
 const pkg = require('./package.json');
 const CommandManager = require('./lib/command-manager');
 const config = require('./lib/config');
-var WebApp = require('./app');
 
 
 SupinBot.config = config;
-SupinBot.WebApp = WebApp;
 SupinBot.CommandManager = new CommandManager();
 SupinBot.log = new winston.Logger({
 	level: config.get('log_level'),
@@ -35,6 +33,16 @@ SupinBot.log = new winston.Logger({
 		})
 	]
 });
+
+SupinBot.log.winstonInfoStream = {
+	write: (msg, encoding) => {
+		SupinBot.log.info(msg.trim());
+	}
+};
+
+// We require express here because express requires winston.
+var WebApp = require('./app');
+SupinBot.WebApp = WebApp;
 /*----------------------------*/
 
 

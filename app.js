@@ -2,6 +2,7 @@
 
 const path = require('path');
 const express = require('express');
+const morgan = require('morgan');
 const bodyparser = require('body-parser');
 const cookieparser = require('cookie-parser');
 const nunjucks = require('nunjucks');
@@ -13,6 +14,7 @@ const PLUGIN_VIEW_PATH_SUFFIX = 'views/';
 
 var app = express();
 app.set('trust proxy', config.get('web.trust_proxy'));
+app.use(morgan('combined', {stream: SupinBot.log.winstonInfoStream}));
 app.use(bodyparser.urlencoded({extended: false}));
 app.use(bodyparser.json());
 app.use(cookieparser());
