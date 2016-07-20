@@ -24,12 +24,14 @@ SupinBot.log = new winston.Logger({
 	transports: [
 		new winston.transports.Console({
 			json: false,
-			handleExceptions: true
+			handleExceptions: true,
+			humanReadableUnhandledException: true
 		}),
 		new winston.transports.File({
 			filename: './shared/supinbot.log',
 			json: false,
-			handleExceptions: true
+			handleExceptions: true,
+			humanReadableUnhandledException: true
 		})
 	]
 });

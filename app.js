@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('path');
+const http = require('http');
 const express = require('express');
 const morgan = require('morgan');
 const bodyparser = require('body-parser');
@@ -18,6 +19,17 @@ app.use(morgan('combined', {stream: SupinBot.log.winstonInfoStream}));
 app.use(bodyparser.urlencoded({extended: false}));
 app.use(bodyparser.json());
 app.use(cookieparser());
+
+app.use(function(req, res, next) {
+	res.renderError = function(errorCode, errorMessage, pageTitle) {
+		errorCode = errorCode || 500;
+		errorMessage = errorMessage || http.STATUS_CODES[String(errorCode)] || 'Something went wrong...';
+		res.status(errorCode);
+		res.render('error.html', {errorCode: errorCode, errorMessage: errorMessage, title: pageTitle});
+	};
+
+	next();
+});
 
 var viewPaths = ['views'];
 
@@ -45,7 +57,7 @@ app.startWebApp = function() {
 
 	app.use(function(err, req, res, next) {
 		SupinBot.log.error(err);
-		res.sendStatus(err.status || 500);
+		res.renderError(err.status || 500);
 	});
 
 	app.listen(config.get('web.port'));
