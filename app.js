@@ -55,6 +55,10 @@ app.startWebApp = function() {
 		express: app,
 	});
 
+	app.use(function(req, res, next) {
+		res.renderError(404);
+	});
+
 	app.use(function(err, req, res, next) {
 		SupinBot.log.error(err);
 		res.renderError(err.status || 500);
