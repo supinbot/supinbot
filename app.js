@@ -64,7 +64,7 @@ app.startWebApp = function() {
 		res.renderError(err.status || 500);
 	});
 
-	app.listen(config.get('web.port'));
+	SupinBot.WebApp.httpServer = app.listen(config.get('web.port'));
 };
 
 module.exports = app;

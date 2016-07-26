@@ -157,4 +157,13 @@ SupinBot.RtmClient.start();
 SupinBot.log.info('Starting the WebApp...');
 SupinBot.WebApp.startWebApp();
 SupinBot.log.info('WebApp started!');
+
+process.on('SIGTERM', () => {
+	SupinBot.log.info('Shutting down...');
+
+	SupinBot.RtmClient.disconnect();
+	SupinBot.WebApp.httpServer.close(() => {
+		process.emit('SHUTDOWN'); // Let plugins know that it is now safe to disconnect from redis and mongodb.
+	});
+});
 /*---------------------------*/
