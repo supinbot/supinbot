@@ -80,7 +80,7 @@ SupinBot.RtmClient.on(SupinBot.RTM_EVENTS.MESSAGE, function (data) {
 		var command = SupinBot.CommandManager.parseMessage(data.text);
 
 		if (command) {
-			command.exec(this, user, channel, data.text);
+			command.exec(SupinBot, user, channel, data.text);
 		}
 	}
 });
