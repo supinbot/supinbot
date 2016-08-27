@@ -15,6 +15,7 @@ const PLUGIN_VIEW_PATH_SUFFIX = 'views/';
 
 var app = express();
 app.set('trust proxy', config.get('web.trust_proxy'));
+app.set('x-powered-by', false);
 app.use(morgan('combined', {stream: SupinBot.log.winstonInfoStream}));
 app.use(bodyparser.urlencoded({extended: false}));
 app.use(bodyparser.json());
